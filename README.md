@@ -1,1 +1,1 @@
-# MeetingProjec
+# MeetingProject
