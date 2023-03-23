@@ -1,0 +1,52 @@
+dateValidator(control: FormControl): { [s: string]: boolean } {
+    // implementation of the validation
+}
+
+ngOnInit() {
+  this.form = this.fb.group({
+    name : [,Validators.required],
+    email: [,Validators.email],
+    birthday: [,this.dateValidator],
+    role: [,Validators.required]
+  });
+}
+
+import * as moment from 'moment';
+
+[...]
+
+dateValidator(control: FormControl): { [s: string]: boolean } {
+  if (control.value) {
+    const date = moment(control.value);
+    const today = moment();
+    if (date.isBefore(today)) {
+      return { 'invalidDate': true }
+    }
+  }
+  return null;
+}
+
+export function dateValidator(): ValidatorFn {
+  return (control: AbstractControl): {[key: string]: any} | null => {
+    const today = new Date().getTime();
+
+    if(!(control && control.value)) {
+      // if there's no control or no value, that's ok
+      return null;
+    }
+
+    // return null if there's no errors
+    return control.value.getTime() > today 
+      ? {invalidDate: 'You cannot use future dates' } 
+      : null;
+  }
+}
+
+ngOnInit() {
+    this.form = this.fb.group({
+      ...
+      birthday: [new Date(), dateValidator()],
+      ...
+    });
+  }
+
